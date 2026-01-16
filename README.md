@@ -1,6 +1,6 @@
 # Policy Intelligence API
 
-A production-ready FastAPI application for an Insurance company featuring a full **RAG (Retrieval-Augmented Generation)** pipeline. This system enables intelligent search of policy clauses and provides an AI-generated analysis of claims using open-source Large Language Models.
+A sample FastAPI application for an Insurance company featuring a full **RAG (Retrieval-Augmented Generation)** pipeline. This system enables intelligent search of policy clauses and provides an AI-generated analysis of claims using open-source Large Language Models.
 
 ## Features
 
