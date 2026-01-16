@@ -1,0 +1,9 @@
+venv/
+.venv/
+__pycache__/
+.chromadb/
+.git/
+.env
+*.pyc
+postman/
+tests/

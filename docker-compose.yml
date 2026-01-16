@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  policy-api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/home/appuser/.chromadb
+    environment:
+      - LOG_LEVEL=INFO
+      - EMBEDDING_DEVICE=cpu
+      - LLM_DEVICE=cpu
+    restart: always

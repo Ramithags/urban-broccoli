@@ -1,3 +1,6 @@
+# Requirements optimized for Python 3.13
+# Note: Python 3.13 removed distutils, so setuptools is required
+
 setuptools>=69.0.0
 fastapi>=0.104.1
 uvicorn[standard]>=0.24.0
@@ -8,7 +11,7 @@ accelerate>=0.21.0
 einops>=0.7.0
 sentence-transformers>=2.2.2
 chromadb>=0.4.18
-numpy>=1.24.0,<2.0.0
+numpy>=1.26.0
 python-multipart>=0.0.6
 prometheus-client>=0.19.0
 structlog>=23.2.0
