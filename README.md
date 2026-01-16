@@ -1,55 +1,51 @@
 # Policy Intelligence API
 
-A production-ready FastAPI application for an Insurance company featuring a RAG-powered Policy Intelligence API. This system enables intelligent search and retrieval of relevant policy clauses based on claim descriptions using semantic similarity.
+A production-ready FastAPI application for an Insurance company featuring a full **RAG (Retrieval-Augmented Generation)** pipeline. This system enables intelligent search of policy clauses and provides an AI-generated analysis of claims using open-source Large Language Models.
 
 ## Features
 
-- **RAG-Powered Search**: Uses industry-bert-insurance-v0.1 model via Hugging Face SentenceTransformer for semantic embeddings
-- **Vector Store**: ChromaDB for efficient similarity search (local for MVP)
-- **Async Architecture**: FastAPI with asynchronous endpoints for high performance
+- **Full RAG Pipeline**: Combines semantic retrieval with AI generation for comprehensive claim analysis.
+- **Semantic Search**: Uses `sentence-transformers/all-MiniLM-L6-v2` for high-accuracy policy retrieval.
+- **AI Analysis**: Integrates **Microsoft Phi-2** (Open Source LLM) to analyze claims against retrieved policy text.
+- **Vector Store**: ChromaDB for efficient similarity search using Cosine Similarity.
+- **Async Architecture**: FastAPI with asynchronous endpoints for high-performance AI inference.
 - **Enterprise Standards**:
-  - Pydantic schemas for request/response validation
-  - Structured logging with structlog
-  - Prometheus-style metrics for latency tracking
-  - Health check endpoints
-  - Comprehensive error handling
+  - Pydantic schemas for request/response validation.
+  - Structured logging with `structlog`.
+  - Prometheus-style metrics for tracking retrieval and generation latency.
+  - Health check endpoints and comprehensive error handling.
 
 ## Tech Stack
 
 - **Framework**: FastAPI 0.104.1
-- **Embedding Model**: industry-bert-insurance-v0.1 (SentenceTransformer)
+- **Embedding Model**: `all-MiniLM-L6-v2` (SentenceTransformer)
+- **Generative Model**: `microsoft/phi-2` (Transformers)
 - **Vector Database**: ChromaDB 0.4.18
 - **Validation**: Pydantic 2.5.0
 - **Logging**: structlog 23.2.0
 - **Metrics**: prometheus-client 0.19.0
-- **Server**: Uvicorn with async support
 
 ## Project Structure
 
 ```
 urban-broccoli/
 ├── app/
-│   ├── __init__.py
-│   ├── main.py                 # FastAPI application
-│   ├── config.py               # Configuration management
-│   ├── schemas.py              # Pydantic schemas
+│   ├── main.py                 # FastAPI application & RAG orchestration
+│   ├── config.py               # Configuration for Models, LLM, and DB
+│   ├── schemas.py              # Pydantic schemas for search & analysis
 │   ├── logging_config.py       # Structured logging setup
-│   ├── metrics.py              # Prometheus metrics
+│   ├── metrics.py              # Prometheus metrics for RAG latency
 │   └── services/
-│       ├── __init__.py
-│       ├── embedding_service.py    # SentenceTransformer service
-│       ├── vector_store.py         # ChromaDB integration
+│       ├── embedding_service.py    # Vectorization service
+│       ├── vector_store.py         # ChromaDB retrieval service
+│       ├── generation_service.py   # LLM generation service (Phi-2)
 │       └── sample_data.py          # Sample policy clauses
 ├── scripts/
 │   └── init_sample_data.py     # Initialize vector store
-├── postman/
-│   ├── Policy_Intelligence_API.postman_collection.json
-│   ├── Policy_Intelligence_API.postman_environment.json
-│   ├── curl_examples.sh        # cURL test scripts
-│   └── README.md               # Postman usage guide
+├── postman/                    # Postman collection & environment
+├── DESIGN.md                   # Mermaid diagrams and architecture
 ├── requirements.txt
-├── run.py                      # Simple startup script
-├── .gitignore
+├── run.py                      # Startup script
 └── README.md
 ```
 
@@ -113,7 +109,40 @@ For detailed instructions, see the [Installation](#installation) and [Running th
    
    This will populate the vector store with 10 sample policy clauses for testing.
 
-## Running the Application
+## Running with Docker
+
+The easiest way to run the application in a production-ready environment is using Docker.
+
+### Using Docker Compose (Recommended)
+
+```bash
+# Build and start the container
+docker-compose up --build -d
+
+# View logs
+docker-compose logs -f
+
+# Initialize sample data inside the container
+docker-compose exec policy-api python scripts/init_sample_data.py
+```
+
+### Using Docker Directly
+
+```bash
+# Build the image
+docker build -t policy-intelligence-api .
+
+# Run the container
+docker run -p 8000:8000 -v $(pwd)/data:/home/appuser/.chromadb policy-intelligence-api
+```
+
+### Docker Features
+- **Non-root user**: Runs as `appuser` for security.
+- **Pre-downloaded models**: Models are baked into the image (~3.5GB image).
+- **Persistent Storage**: Policy data is stored in the `./data` directory on your host.
+- **Healthchecks**: Docker monitors if the API is responsive.
+
+## Running the Application Locally
 
 ### Prerequisites
 
@@ -210,14 +239,18 @@ Once the server is running, the API is available at:
 
 3. **Test Policy Search**:
    ```bash
+   # Search with RAG analysis enabled
    curl -X POST "http://localhost:8000/api/v1/policy/search" \
      -H "Content-Type: application/json" \
      -d '{
        "claim_description": "My car was damaged in a collision",
        "max_results": 5,
-       "min_score": 0.5
+       "min_score": 0.5,
+       "is_enable_rag": true
      }'
    ```
+
+   **Note on RAG Toggle**: The `is_enable_rag` flag (boolean) controls whether the AI generation step is performed. When set to `false` (default), the API returns only the search results, which is faster and uses fewer resources. When set to `true`, it performs the full RAG analysis.
 
 ### Stopping the Application
 
@@ -280,19 +313,18 @@ POST /api/v1/policy/search
 **Response**:
 ```json
 {
-  "query": "My car was damaged in a collision with another vehicle",
+  "query": "Water damage from a leaking pipe",
   "results": [
     {
-      "clause_id": "CLAUSE_001",
-      "clause_text": "This policy covers damage to the insured vehicle...",
-      "policy_type": "Auto Insurance",
-      "section": "Coverage",
-      "relevance_score": 0.95
+      "clause_id": "CLAUSE_011",
+      "clause_text": "This policy covers sudden and accidental discharge of water...",
+      "relevance_score": 0.85
     }
   ],
+  "analysis": "Based on the provided query, the claim for water damage from a leaking pipe is likely covered under CLAUSE_011, which covers accidental discharge of water from within a plumbing system.",
   "total_results": 1,
-  "search_time_ms": 45.2,
-  "timestamp": "2024-01-15T10:30:00"
+  "search_time_ms": 1500.5,
+  "timestamp": "2026-01-16T10:30:00"
 }
 ```
 
@@ -346,7 +378,7 @@ Configuration is managed through `app/config.py` using Pydantic Settings. You ca
 # .env file example
 APP_NAME=Policy Intelligence API
 DEBUG=false
-EMBEDDING_MODEL=industry-bert-insurance-v0.1
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 EMBEDDING_DEVICE=cpu
 CHROMA_DB_PATH=./.chromadb
 CHROMA_COLLECTION_NAME=policy_clauses
