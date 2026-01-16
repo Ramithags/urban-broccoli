@@ -1,0 +1,377 @@
+{
+	"info": {
+		"_postman_id": "policy-intelligence-api-collection",
+		"name": "Policy Intelligence API",
+		"description": "Postman collection for the RAG-powered Policy Intelligence API. This collection includes endpoints for health checks and policy clause search.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				},
+				"description": "Check the health status of the API and its dependencies (embedding model and vector store)."
+			},
+			"response": []
+		},
+		{
+			"name": "Root Endpoint",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "Get API information and available endpoints."
+			},
+			"response": []
+		},
+		{
+			"name": "Metrics",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/metrics",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"metrics"
+					]
+				},
+				"description": "Get Prometheus-style metrics for monitoring API performance."
+			},
+			"response": []
+		},
+		{
+			"name": "Policy Search",
+			"item": [
+				{
+					"name": "Basic Claim - Auto Collision",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"claim_description\": \"My car was damaged in a collision with another vehicle at an intersection. The front bumper and headlights are completely destroyed.\",\n    \"max_results\": 5,\n    \"min_score\": 0.5,\n    \"is_enable_rag\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/policy/search",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"policy",
+								"search"
+							]
+						},
+						"description": "Search for policy clauses related to an auto collision claim."
+					},
+					"response": []
+				},
+				{
+					"name": "Property Fire Damage",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"claim_description\": \"My house caught fire due to an electrical fault. There is significant smoke damage throughout the property and structural damage to the kitchen area.\",\n    \"max_results\": 10,\n    \"min_score\": 0.6,\n    \"is_enable_rag\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/policy/search",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"policy",
+								"search"
+							]
+						},
+						"description": "Search for policy clauses related to property fire damage claim."
+					},
+					"response": []
+				},
+				{
+					"name": "Theft Claim",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"claim_description\": \"My personal belongings including jewelry and electronics were stolen from my home during a break-in. The items were not specifically listed in my policy.\",\n    \"max_results\": 8,\n    \"min_score\": 0.4\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/policy/search",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"policy",
+								"search"
+							]
+						},
+						"description": "Search for policy clauses related to theft of personal belongings."
+					},
+					"response": []
+				},
+				{
+					"name": "Medical Expenses - Auto Accident",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"claim_description\": \"I was injured in a car accident and incurred significant medical expenses including hospital bills, physical therapy, and prescription medications.\",\n    \"max_results\": 5,\n    \"min_score\": 0.5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/policy/search",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"policy",
+								"search"
+							]
+						},
+						"description": "Search for policy clauses related to medical expenses from an auto accident."
+					},
+					"response": []
+				},
+				{
+					"name": "Flood Damage Query",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"claim_description\": \"My basement flooded after heavy rainfall, causing water damage to furniture and personal property stored there.\",\n    \"max_results\": 10,\n    \"min_score\": 0.3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/policy/search",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"policy",
+								"search"
+							]
+						},
+						"description": "Search for policy clauses related to flood damage (likely to show exclusions)."
+					},
+					"response": []
+				},
+				{
+					"name": "Liability Claim",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"claim_description\": \"I am being sued for negligence after someone was injured on my property. I need to understand my liability coverage limits.\",\n    \"max_results\": 5,\n    \"min_score\": 0.6\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/policy/search",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"policy",
+								"search"
+							]
+						},
+						"description": "Search for policy clauses related to liability coverage."
+					},
+					"response": []
+				},
+				{
+					"name": "Wear and Tear Exclusion",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"claim_description\": \"My vehicle's transmission failed after 150,000 miles. The mechanic says it's due to normal wear and tear.\",\n    \"max_results\": 5,\n    \"min_score\": 0.5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/policy/search",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"policy",
+								"search"
+							]
+						},
+						"description": "Search for policy clauses related to wear and tear exclusions."
+					},
+					"response": []
+				},
+				{
+					"name": "Claims Procedure",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"claim_description\": \"I need to know what documents and information I need to provide when filing a claim, and what the time limits are for notification.\",\n    \"max_results\": 5,\n    \"min_score\": 0.5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/policy/search",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"policy",
+								"search"
+							]
+						},
+						"description": "Search for policy clauses related to claims procedure and notification requirements."
+					},
+					"response": []
+				}
+			],
+			"description": "Search for relevant policy clauses based on claim descriptions using semantic similarity."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}
